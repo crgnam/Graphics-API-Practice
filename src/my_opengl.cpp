@@ -72,12 +72,31 @@ int main(void) {
     GAPIP::add_shader(program, GL_VERTEX_SHADER, "shaders/opengl/vertex/basic_2d.shader");
     GAPIP::add_shader(program, GL_FRAGMENT_SHADER, "shaders/opengl/fragment/magenta.shader");
 
-    glUseProgram(program);
+    // Tell GL to use the program the shaders are bound to:
+    GLCall(glUseProgram(program));
+
+    // Create uniform:
+    GLCall(int location = glGetUniformLocation(program, "u_Color"));
+    ASSERT(location != -1)
+    
+    // Initial color:
+    float r = 1;
+    float b = 1;
+    float g = 0;
+    float rb_step = -0.01;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
+
+        if (r > 1.0f || r < 0.0f) {
+            rb_step = -rb_step;
+        }
+        r = r + rb_step;
+        b = b + rb_step;
+        g = g - rb_step;
+        GLCall(glUniform4f(location, r, g, b, 1.0f));
 
         // Issue the draw call:
         GLCall(glDrawElements(GL_TRIANGLES, 3 * num_faces, GL_UNSIGNED_INT, nullptr)); // Using nullptr because index_buffer is already bound to GL_ELEMENT_ARRAY_BUFFER
