@@ -14,7 +14,7 @@ int main(void) {
     };
 
     #ifdef __APPLE__
-        cout << "I'm apple machine" << endl;
+        std::cout << "I'm apple machine" << std::endl;
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -39,18 +39,31 @@ int main(void) {
     };
 
     // Create vertex buffer:
-    float positions[6] = {-0.5f, -0.5f,
-                           0.0f,  0.5f,
-                           0.5f, -0.5f};
+    const unsigned int num_vertices = 4;
+    const unsigned int num_attributes = 2;
+    float positions[num_vertices*num_attributes] = {-0.5f, -0.5f,
+                                                     0.5f, -0.5f,
+                                                     0.5f,  0.5f,
+                                                    -0.5f, 0.5f};
+
+    const unsigned int num_faces = 2;
+    unsigned int indices[num_faces*3] = {0, 1, 2,
+                                         2, 3, 0 };
 
     // Modern OpenGL Vertex Buffer:
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num_vertices * num_attributes * sizeof(float), positions, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (const void*) 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_attributes * sizeof(float), (const void*) 0);
     glEnableVertexAttribArray(0);
+
+    // Modern OpenGL Index Buffer:
+    unsigned int index_buffer;
+    glGenBuffers(1, &index_buffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_faces * 3 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
     // Create OpenGL Program:
     unsigned int program = glCreateProgram();
@@ -67,7 +80,7 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Issue the draw call:
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 3 * num_faces, GL_UNSIGNED_INT, nullptr); // Using nullptr because index_buffer is already bound to GL_ELEMENT_ARRAY_BUFFER
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
