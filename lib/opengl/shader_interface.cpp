@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include "GAPIP/opengl/shader_interface.hpp"
+#include "GAPIP/opengl/utils.hpp"
 
 // Load a shader code:
 std::string load_shader_source(const std::string& file_path) {
@@ -25,18 +26,18 @@ static unsigned int compile_shader(unsigned int type, const std::string& source)
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
 
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
+    GLCall(glShaderSource(id, 1, &src, nullptr));
+    GLCall(glCompileShader(id));
 
     // Error handling:
     int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE) {
         int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+        GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         char* message = (char*)alloca(length * sizeof(char));
 
-        glGetShaderInfoLog(id, length, &length, message);
+        GLCall(glGetShaderInfoLog(id, length, &length, message));
 
         std::cout << "Failed to compile shader!  GL Log:\n";
         std::cout << message << "\n";
@@ -54,10 +55,8 @@ void GAPIP::add_shader(unsigned int program, unsigned int type, const std::strin
 
     unsigned int shader = compile_shader(type, shader_source);
 
-    glAttachShader(program, shader);
-
-    glLinkProgram(program);
-    glValidateProgram(program);
-
-    glDeleteShader(shader);
+    GLCall(glAttachShader(program, shader));
+    GLCall(glLinkProgram(program));
+    GLCall(glValidateProgram(program));
+    GLCall(glDeleteShader(shader));
 };

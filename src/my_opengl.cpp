@@ -4,6 +4,7 @@
 #include <string>
 
 #include "GAPIP/opengl/shader_interface.hpp"
+#include "GAPIP/opengl/utils.hpp"
 
 int main(void) {
     GLFWwindow* window;
@@ -52,18 +53,17 @@ int main(void) {
 
     // Modern OpenGL Vertex Buffer:
     unsigned int buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices * num_attributes * sizeof(float), positions, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_attributes * sizeof(float), (const void*) 0);
-    glEnableVertexAttribArray(0);
+    GLCall(glGenBuffers(1, &buffer));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, num_vertices * num_attributes * sizeof(float), positions, GL_STATIC_DRAW));
+    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_attributes * sizeof(float), (const void*) 0));
+    GLCall(glEnableVertexAttribArray(0));
 
     // Modern OpenGL Index Buffer:
     unsigned int index_buffer;
-    glGenBuffers(1, &index_buffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_faces * 3 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    GLCall(glGenBuffers(1, &index_buffer));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_faces * 3 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
 
     // Create OpenGL Program:
     unsigned int program = glCreateProgram();
@@ -80,7 +80,7 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Issue the draw call:
-        glDrawElements(GL_TRIANGLES, 3 * num_faces, GL_UNSIGNED_INT, nullptr); // Using nullptr because index_buffer is already bound to GL_ELEMENT_ARRAY_BUFFER
+        GLCall(glDrawElements(GL_TRIANGLES, 3 * num_faces, GL_UNSIGNED_INT, nullptr)); // Using nullptr because index_buffer is already bound to GL_ELEMENT_ARRAY_BUFFER
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
