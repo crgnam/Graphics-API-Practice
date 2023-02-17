@@ -39,3 +39,17 @@ include_directories(include)
 # Add project subdirectories:
 add_subdirectory(lib)
 add_subdirectory(src)
+
+# Copy the shaders to the build directory:
+file(COPY shaders/ DESTINATION ${CMAKE_BINARY_DIR}/shaders)
+
+# Setup Installation instructions:
+install(DIRECTORY shaders/ DESTINATION bin/shaders)
+
+
+# Use CPack to generate Installer:
+# include(installrequiredsystemlibraries)
+# set(cpack_resource_file_license "")
+# set(cpack_package_version_major "")
+# set(cpack_package_version_minor "")
+# include(cpack)

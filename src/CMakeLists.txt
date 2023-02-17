@@ -4,7 +4,9 @@ if (BUILD_OPENGL)
 	find_package(glfw3 CONFIG REQUIRED)
 	find_package(glew CONFIG REQUIRED)
 	add_executable(my_opengl my_opengl.cpp)
-	target_link_libraries(my_opengl glfw GLEW::GLEW opengl32)
+	target_link_libraries(my_opengl glfw GLEW::GLEW opengl32 libmy_opengl)
+
+	INSTALL(TARGETS my_opengl DESTINATION bin)
 endif()
 
 # Add my_vulkan:
