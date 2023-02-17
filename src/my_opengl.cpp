@@ -13,8 +13,18 @@ int main(void) {
         return -1;
     };
 
+    #ifdef __APPLE__
+        cout << "I'm apple machine" << endl;
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    #endif
+
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1080, 1920, "Hello World", NULL, NULL);
+    unsigned int width = 800;
+    unsigned int height = 600;
+    window = glfwCreateWindow(width,height, "Hello World", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;

@@ -5,7 +5,7 @@ if (BUILD_OPENGL)
 	find_package(OpenGL REQUIRED)
 	find_package(glfw3 CONFIG REQUIRED)
 	find_package(glew CONFIG REQUIRED)
-	target_link_libraries(libmy_opengl PUBLIC glfw GLEW::GLEW opengl32)
+	target_link_libraries(libmy_opengl PUBLIC glfw GLEW::GLEW OpenGL::GL)
 
 	INSTALL(TARGETS libmy_opengl DESTINATION bin)
 

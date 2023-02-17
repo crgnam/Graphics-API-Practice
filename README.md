@@ -17,7 +17,7 @@ Simply allow the CMake configuration to complete and then Build usingby selectin
 ```
 mkdir build
 cd build
-cmake ..
+cmake .. -DCMAKE_TOOLCHAIN_FILE=</your/path/to/vcpkg/>/scripts/buildsystems/vcpkg.cmake
 cmake --build . -j
 ```
 
@@ -25,6 +25,6 @@ cmake --build . -j
 ```
 mkdir build
 cd build
-cmake ..
+cmake .. -DCMAKE_TOOLCHAIN_FILE=</your/path/to/vcpkg/>/scripts/buildsystems/vcpkg.cmake
 cmake --build . -j
 ```
