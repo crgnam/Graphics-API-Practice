@@ -3,6 +3,10 @@
 #include <iostream>
 #include <string>
 
+#include "GAPIP/opengl/vertex_array.hpp"
+#include "GAPIP/opengl/vertex_buffer.hpp"
+#include "GAPIP/opengl/vertex_buffer_layout.hpp"
+#include "GAPIP/opengl/index_buffer.hpp"
 #include "GAPIP/opengl/shader_interface.hpp"
 #include "GAPIP/opengl/utils.hpp"
 
@@ -45,25 +49,25 @@ int main(void) {
     float positions[num_vertices*num_attributes] = {-0.5f, -0.5f,
                                                      0.5f, -0.5f,
                                                      0.5f,  0.5f,
-                                                    -0.5f, 0.5f};
+                                                    -0.5f,  0.5f};
 
     const unsigned int num_faces = 2;
     unsigned int indices[num_faces*3] = {0, 1, 2,
                                          2, 3, 0 };
 
-    // Modern OpenGL Vertex Buffer:
-    unsigned int buffer;
-    GLCall(glGenBuffers(1, &buffer));
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, num_vertices * num_attributes * sizeof(float), positions, GL_STATIC_DRAW));
-    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, num_attributes * sizeof(float), (const void*) 0));
-    GLCall(glEnableVertexAttribArray(0));
+    // Vertex buffer:
+    VertexBuffer vb(positions, num_vertices * num_attributes * sizeof(float));
 
-    // Modern OpenGL Index Buffer:
-    unsigned int index_buffer;
-    GLCall(glGenBuffers(1, &index_buffer));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_faces * 3 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
+    // Vertex buffer layout:
+    VertexBufferLayout layout;
+    layout.push<float>(2);
+
+    // Vertex array:
+    VertexArray va;
+    va.add_buffer(vb, layout);
+
+    // Index Buffer:
+    IndexBuffer ib(indices, 3*num_faces);
 
     // Create OpenGL Program:
     unsigned int program = glCreateProgram();
@@ -90,6 +94,8 @@ int main(void) {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        GLCall(glUseProgram(program));
+
         if (r > 1.0f || r < 0.0f) {
             rb_step = -rb_step;
         }
@@ -97,6 +103,9 @@ int main(void) {
         b = b + rb_step;
         g = g - rb_step;
         GLCall(glUniform4f(location, r, g, b, 1.0f));
+
+        va.bind();
+        ib.bind();
 
         // Issue the draw call:
         GLCall(glDrawElements(GL_TRIANGLES, 3 * num_faces, GL_UNSIGNED_INT, nullptr)); // Using nullptr because index_buffer is already bound to GL_ELEMENT_ARRAY_BUFFER
